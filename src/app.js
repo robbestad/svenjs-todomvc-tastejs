@@ -67,7 +67,6 @@ let todoMVCApp = Svenjs.create({
       this.updateLocalStorage();
     },
     updateLocalStorage(){
-	    console.log('setting item');
       localStorage.setItem("todos",JSON.stringify(this.state.messages));
     },
     addTodo(e){
