@@ -1,0 +1,34 @@
+{
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/svenanders/svenjs-todomvc-tastejs.git"
+  },
+  "main": "src/index.js",
+  "directories": {
+    "example": "dist"
+  },
+  "scripts": {
+    "build": "./node_modules/.bin/webpack -p --config webpack.config.js src/index.js --output-filename ./bundle.min.js"
+  },
+  "devDependencies": {
+    "babel": "^6.1.18",
+    "babel-cli": "^6.2.0",
+    "babel-core": "^6.2.1",
+    "babel-eslint": "^4.1.6",
+    "babel-loader": "^6.2.0",
+    "babel-preset-es2015": "^6.1.18",
+    "jstransform": "^11.0.3",
+    "todomvc-app-css": "^2.0.0",
+    "todomvc-common": "^1.0.0",
+    "webpack": "^1.9.6",
+    "webpack-dev-server": "^1.8.2"
+  },
+  "author": "Sven Anders Robbestad",
+  "license": "ISC",
+  "dependencies": {
+    "svenjsx": "^0.1.1",
+    "svenjs": "^0.2.1",
+    "svenjsx-loader": "^0.1.0"
+  }
+}
