@@ -18,12 +18,15 @@ let todoMVCApp = Svenjs.create({
       if(node!==null && _prevEditing){
         _prevEditing=false;
         node.focus();
-        node.setSelectionRange(node.value.length, node.value.length); 
+        node.setSelectionRange(node.value.length, node.value.length);
       }
     },
     componentDidMount(){
       var url = self.history === true ? self.getPath() : window.location.hash.replace(/.*#\//, '');
-      this.setState({messages:this.state.messages,url:url});
+      let messages = JSON.parse(localStorage.getItem("todos"));
+      if(!messages) messages = this.state.messages;
+      this.setState({messages:messages,url:url});
+      this.updateLocalStorage();
       window.addEventListener("hashchange", this.onHashChange.bind(this), false);
     },
     handleEditTodoKeyDown(e){
@@ -52,6 +55,7 @@ let todoMVCApp = Svenjs.create({
         var url = self.history === true ? self.getPath() : window.location.hash.replace(/.*#\//, '');
         this.resetEditing();
         this.setState({messages:this.state.messages,url:url});
+        this.updateLocalStorage();
     },
     saveTodo(e){
       let val = "undefined" === typeof e.srcElement ? e.target.value : e.srcElement.value;
@@ -60,6 +64,11 @@ let todoMVCApp = Svenjs.create({
         return msg
       })
       this.setState({messages:messages, url:this.state.url});
+      this.updateLocalStorage();
+    },
+    updateLocalStorage(){
+	    console.log('setting item');
+      localStorage.setItem("todos",JSON.stringify(this.state.messages));
     },
     addTodo(e){
       let messages=this.state.messages;
@@ -69,12 +78,14 @@ let todoMVCApp = Svenjs.create({
       else lastId=messages[messages.length-1].id;
       messages.push({id:lastId+1, message:val , complete: false, editing:false});
       this.setState({messages:messages, url:this.state.url});
+      this.updateLocalStorage();
     },
     destroyMessage(item){
       let messages=this.state.messages.filter((msg)=>{
         return msg.id!==item.id
       })
       this.setState({messages:messages});
+      this.updateLocalStorage();
     },
     destroyCompleted(){
       let messages=this.state.messages.filter((msg)=>{
@@ -82,6 +93,7 @@ let todoMVCApp = Svenjs.create({
       })
       this.resetEditing();
       this.setState({messages:messages, url:this.state.url});
+      this.updateLocalStorage();
     },
     toggleOne(item,e){
       let messages=this.state.messages.filter((msg)=>{
@@ -90,6 +102,7 @@ let todoMVCApp = Svenjs.create({
       })
       this.resetEditing();
       this.setState({messages:messages, url:this.state.url})
+      this.updateLocalStorage();
     },
     simpleResetEditing(){
       let messages=this.state.messages.map((msg)=>{
@@ -98,6 +111,7 @@ let todoMVCApp = Svenjs.create({
       });
       _prevEditing=false;
       this.setState({messages:messages, url:this.state.url});
+      this.updateLocalStorage();
     },
     resetEditing(e){
       let update=false;
@@ -109,6 +123,7 @@ let todoMVCApp = Svenjs.create({
       if(update) {
         _prevEditing=true;
         this.setState({messages:messages, url:this.state.url});
+        this.updateLocalStorage();
       } else {
         _prevEditing=false;
       }
@@ -121,9 +136,10 @@ let todoMVCApp = Svenjs.create({
           return msg
         })
         this.setState({messages:messages, url:this.state.url});
+        this.updateLocalStorage();
         let node= document.getElementsByClassName('edit active')[0];
         node.focus();
-        node.setSelectionRange(node.value.length, node.value.length); 
+        node.setSelectionRange(node.value.length, node.value.length);
       }
     },
     toggleAll(){
@@ -134,9 +150,10 @@ let todoMVCApp = Svenjs.create({
       })
       this.resetEditing();
       this.setState({messages:messages});
+      this.updateLocalStorage();
     },
     listTodos(){
-      
+debugger;
       let shownTodos = this.state.messages.filter( (todo) => {
         switch (this.state.url) {
         case "active":
@@ -147,13 +164,13 @@ let todoMVCApp = Svenjs.create({
           return true;
         }
       }, this);
-      
+
       return shownTodos.map((todo)=>{
         let label= todo.message;
         let checked=false;
         let className="todo";
         let editClassName="edit";
-        if(todo.editing){ 
+        if(todo.editing){
           className="todo editing";
           editClassName="edit active";
           }
@@ -167,8 +184,8 @@ let todoMVCApp = Svenjs.create({
                  <label ondblclick={this.onDoubleClick.bind(this, todo)} >{label}</label>
                  <button className="destroy" onClick={this.destroyMessage.bind(this,todo)}></button>
                </div>
-               <input className={editClassName} 
-                type="text" 
+               <input className={editClassName}
+                type="text"
                 onKeyDown={this.handleEditTodoKeyDown.bind(this)}
                 value={todo.message} />
              </li>
@@ -185,7 +202,7 @@ let todoMVCApp = Svenjs.create({
       return (<section class="todoapp">
                 <header class="header">
                   <h1>todos</h1>
-                  <input className="new-todo" 
+                  <input className="new-todo"
                     id="new-todo"
                     onClick={this.resetEditing.bind(this)}
                     onKeyDown={this.handleNewTodoKeyDown.bind(this,"new-todo")}
@@ -200,9 +217,9 @@ let todoMVCApp = Svenjs.create({
                 </section>
 
                 <footer class="footer">
-                  <span class="todo-count">{this.state.messages.length} 
+                  <span class="todo-count">{this.state.messages.length}
                     {this.state.messages.length === 1 ? " item" : " items"} remaining</span>
-                    
+
                   <ul class="filters">
                       <li>
                           <a href="#/all" class={selected_all}>All</a>
